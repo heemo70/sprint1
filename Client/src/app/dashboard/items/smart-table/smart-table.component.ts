@@ -100,6 +100,26 @@ export class SmartTableComponent {
               private curpipe: CurrencyPipe) {
     this.source = new LocalDataSource();
     this.getProducts();
+    //bonus (check admin rights)
+    let currentUser = this.userService.getUser();
+    if(currentUser === null){
+      this.settings.actions.add = false;
+      this.settings.actions.edit = false;
+      this.settings.actions.delete = false;
+    }else if (currentUser.userType === 'admin'){
+      this.settings.actions.add = true;
+      this.settings.actions.edit = true;
+      this.settings.actions.delete = true;
+    }else if (currentUser.userType === 'manager'){
+      this.settings.actions.add = true;
+      this.settings.actions.edit = true;
+      this.settings.actions.delete = false
+    }else{
+      this.settings.actions.add = false;
+      this.settings.actions.edit = false;
+      this.settings.actions.delete = false
+    }
+
   }
 
   message(): String {
@@ -125,22 +145,20 @@ export class SmartTableComponent {
   }
 
   createProduct(event){
-
     this.productService.addProduct(event.newData).subscribe(function(res){
-      document.location.reload(true);
-
+      event.confirm.resolve();
     });
   }
 
   editProduct(event){
     this.productService.editProduct(event.newData).subscribe(function(res){
-      document.location.reload(true);
+      event.confirm.resolve();
     });
   }
 
   deleteProduct(event){
     this.productService.deleteProduct(event.data._id).subscribe(function(res){
-      document.location.reload(true);
+      event.confirm.resolve();
     });
   }
 
