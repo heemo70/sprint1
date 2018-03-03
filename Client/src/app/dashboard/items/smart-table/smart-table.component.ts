@@ -20,22 +20,25 @@ export class SmartTableComponent {
   settings = {
     noDataMessage: this.message(),
     actions: {
-      add: false,
-      edit: false,
-      delete: false
+      add: true,
+      edit: true,
+      delete: true
     },
     add: {
       addButtonContent: '<i class="nb-plus" ></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
-      cancelButtonContent: '<i class="nb-close"></i>'
+      cancelButtonContent: '<i class="nb-close"></i>',
+      confirmCreate: true
     },
     edit: {
       editButtonContent: '<i class="nb-edit"></i>',
       saveButtonContent: '<i class="nb-checkmark"></i>',
-      cancelButtonContent: '<i class="nb-close"></i>'
+      cancelButtonContent: '<i class="nb-close"></i>',
+      confirmSave: true
     },
     delete: {
-      deleteButtonContent: '<i class="nb-trash"></i>'
+      deleteButtonContent: '<i class="nb-trash"></i>',
+      confirmDelete: true
     },
     columns: {
       id: {
@@ -59,22 +62,22 @@ export class SmartTableComponent {
         title: 'Created At',
         type: 'date',
         editable: false,
-        valuePrepareFunction: (date) => { 
+        valuePrepareFunction: (date) => {
           var raw = new Date(date);
-  
+
           var formatted = this.datepipe.transform(raw, 'dd MMM yyyy');
-          return formatted; 
+          return formatted;
         }
       },
       updatedAt: {
         title: 'Last Updated At',
         type: 'date',
         editable: false,
-        valuePrepareFunction: (date) => { 
+        valuePrepareFunction: (date) => {
           var raw = new Date(date);
-  
+
           var formatted = this.datepipe.transform(raw, 'dd MMM yyyy');
-          return formatted; 
+          return formatted;
         }
       },
       sellerName: {
@@ -113,11 +116,32 @@ export class SmartTableComponent {
           Prods[i].createdAt = new Date(Prods[i].createdAt);
           Prods[i].updatedAt = new Date(Prods[i].updatedAt);
           var name = Prods[i].sellerName;
-          if(name === 'Ahmed Darwish' || name === 'Omar Hesham' || name === 'Nadine Hany' || name === 'Ibrahim Ali' || name === 'Salma Ghoneim')
+          if(name === 'Ibrahim Ali')
             mine.push(Prods[i]);
         }
         self.source.load(mine);
       }
     });
   }
+
+  createProduct(event){
+
+    this.productService.addProduct(event.newData).subscribe(function(res){
+      document.location.reload(true);
+
+    });
+  }
+
+  editProduct(event){
+    this.productService.editProduct(event.newData).subscribe(function(res){
+      document.location.reload(true);
+    });
+  }
+
+  deleteProduct(event){
+    this.productService.deleteProduct(event.data._id).subscribe(function(res){
+      document.location.reload(true);
+    });
+  }
+
 }
